@@ -12,3 +12,12 @@ python app.py
 ```
 
 Open your browser at http://localhost:5000 to start the quiz.
+
+## Running Tests
+
+Install dependencies and run the test suite with **pytest**:
+
+```bash
+pip install -r requirements.txt
+pytest
+```
