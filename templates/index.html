@@ -8,6 +8,8 @@
 </head>
 <body>
   <h1>영어 단어 퀴즈</h1>
+  <p id="score">점수: {{ score }}</p>
+  <button id="reset">점수 초기화</button>
   <div id="quiz">
     <div id="scoreboard">점수: <span id="score">0</span></div>
     <p id="definition"></p>
@@ -56,14 +58,16 @@
           } else {
             $('#result').text('오답입니다. 정답: ' + res.answer);
           }
-          updateScore();
           loadQuestion();
         }
       });
     });
 
-    $('#next').on('click', function() {
-      loadQuestion();
+
+    $('#reset').on('click', function() {
+      $.post('/reset', function(res) {
+        $('#score').text('점수: ' + res.score);
+      });
     });
 
     $(function() {
