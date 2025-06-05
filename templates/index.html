@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>Vocabulary Quiz</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <h1>영어 단어 퀴즈</h1>
+  <div id="quiz">
+    <p id="definition"></p>
+    <form id="choices"></form>
+    <button id="submit">제출</button>
+    <p id="result"></p>
+  </div>
+
+  <script>
+    let currentId = null;
+    function loadQuestion() {
+      $('#result').text('');
+      $.getJSON('/question', function(data) {
+        currentId = data.id;
+        $('#definition').text('뜻: ' + data.definition);
+        const form = $('#choices');
+        form.empty();
+        data.options.forEach(function(option, index) {
+          const label = $('<label>');
+          const radio = $('<input type="radio" name="choice">').val(option);
+          label.append(radio).append(option);
+          form.append(label).append('<br>');
+        });
+      });
+    }
+
+    $('#submit').on('click', function(e) {
+      e.preventDefault();
+      const choice = $('input[name="choice"]:checked').val();
+      if (!choice) return;
+      $.ajax({
+        url: '/answer',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({id: currentId, choice: choice}),
+        success: function(res) {
+          if (res.correct) {
+            $('#result').text('정답입니다!');
+          } else {
+            $('#result').text('오답입니다. 정답: ' + res.answer);
+          }
+          loadQuestion();
+        }
+      });
+    });
+
+    $(function() {
+      loadQuestion();
+    });
+  </script>
+</body>
+</html>
