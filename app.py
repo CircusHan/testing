@@ -15,11 +15,29 @@ def index():
     return render_template('index.html')
 
 @app.route('/question')
-def question():
-    word = random.choice(WORDS)
+@app.route('/question/<category>')
+def question(category=None):
+    # Determine category from path or query string
+    category = category or request.args.get('category')
+    words = WORDS
+    if category:
+        words = [w for w in WORDS if w.get('category') == category]
+        if not words:
+            return jsonify({'error': 'Category not found'}), 404
+
+    word = random.choice(words)
     correct = word['word']
-    # prepare options
-    others = random.sample([w['word'] for w in WORDS if w['word'] != correct], 3)
+
+    # Prepare options from the same set of words
+    others_pool = [w['word'] for w in words if w['word'] != correct]
+    if len(others_pool) >= 3:
+        others = random.sample(others_pool, 3)
+    else:
+        # fallback: fill remaining options from the whole list
+        others = others_pool
+        remaining = [w['word'] for w in WORDS if w['word'] != correct and w['word'] not in others]
+        others += random.sample(remaining, 3 - len(others))
+
     options = others + [correct]
     random.shuffle(options)
     return jsonify({
