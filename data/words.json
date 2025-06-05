@@ -1,7 +1,32 @@
 [
-  {"word": "apple", "definition": "사과"},
-  {"word": "house", "definition": "집"},
-  {"word": "car", "definition": "자동차"},
-  {"word": "dog", "definition": "강아지"},
-  {"word": "book", "definition": "책"}
+  {"word": "apple", "definition": "사과", "category": "food"},
+  {"word": "banana", "definition": "바나나", "category": "food"},
+  {"word": "bread", "definition": "빵", "category": "food"},
+  {"word": "cheese", "definition": "치즈", "category": "food"},
+  {"word": "carrot", "definition": "당근", "category": "food"},
+  {"word": "milk", "definition": "우유", "category": "food"},
+  {"word": "soup", "definition": "수프", "category": "food"},
+  {"word": "chicken", "definition": "치킨", "category": "food"},
+  {"word": "fish", "definition": "생선", "category": "food"},
+  {"word": "rice", "definition": "쌀", "category": "food"},
+
+  {"word": "house", "definition": "집", "category": "common-things"},
+  {"word": "car", "definition": "자동차", "category": "common-things"},
+  {"word": "dog", "definition": "강아지", "category": "common-things"},
+  {"word": "book", "definition": "책", "category": "common-things"},
+  {"word": "table", "definition": "탁자", "category": "common-things"},
+  {"word": "chair", "definition": "의자", "category": "common-things"},
+  {"word": "phone", "definition": "전화기", "category": "common-things"},
+  {"word": "window", "definition": "창문", "category": "common-things"},
+  {"word": "computer", "definition": "컴퓨터", "category": "common-things"},
+  {"word": "pencil", "definition": "연필", "category": "common-things"},
+  {"word": "door", "definition": "문", "category": "common-things"},
+
+  {"word": "shirt", "definition": "셔츠", "category": "clothes"},
+  {"word": "pants", "definition": "바지", "category": "clothes"},
+  {"word": "shoes", "definition": "신발", "category": "clothes"},
+  {"word": "coat", "definition": "코트", "category": "clothes"},
+  {"word": "hat", "definition": "모자", "category": "clothes"},
+  {"word": "dress", "definition": "드레스", "category": "clothes"},
+  {"word": "socks", "definition": "양말", "category": "clothes"}
 ]
