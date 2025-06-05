@@ -20,14 +20,6 @@ python app.py
 
 Open your browser at <http://localhost:5000> to start the quiz.
 
-## Running Tests
-
-This project uses `pytest` for testing. Once you have installed the
-dependencies, run the test suite with:
-
-```bash
-pytest
-```
 
 There are currently no automated tests, but you can add them under a `tests/`
 directory.
