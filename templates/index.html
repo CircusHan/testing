@@ -11,7 +11,7 @@
   <p id="score">점수: {{ score }}</p>
   <button id="reset">점수 초기화</button>
   <div id="quiz">
-    <div id="scoreboard">점수: <span id="score">0</span></div>
+    <div id="scoreboard">점수: <span id="score-value">0</span></div>
     <p id="definition"></p>
     <form id="choices"></form>
     <button id="submit">제출</button>
@@ -23,7 +23,7 @@
     let currentId = null;
     let score = 0;
     function updateScore() {
-      $('#score').text(score);
+      $('#score-value').text(score);
     }
 
     function loadQuestion() {
@@ -66,7 +66,7 @@
 
     $('#reset').on('click', function() {
       $.post('/reset', function(res) {
-        $('#score').text('점수: ' + res.score);
+        $('#score-value').text(res.score);
       });
     });
 
