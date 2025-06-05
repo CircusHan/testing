@@ -4,18 +4,28 @@
   <meta charset="utf-8">
   <title>Vocabulary Quiz</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <h1>영어 단어 퀴즈</h1>
+  <p id="score">점수: {{ score }}</p>
+  <button id="reset">점수 초기화</button>
   <div id="quiz">
+    <div id="scoreboard">점수: <span id="score">0</span></div>
     <p id="definition"></p>
     <form id="choices"></form>
     <button id="submit">제출</button>
+    <button id="next" type="button">다음 문제</button>
     <p id="result"></p>
   </div>
 
   <script>
     let currentId = null;
+    let score = 0;
+    function updateScore() {
+      $('#score').text(score);
+    }
+
     function loadQuestion() {
       $('#result').text('');
       $.getJSON('/question', function(data) {
@@ -44,11 +54,19 @@
         success: function(res) {
           if (res.correct) {
             $('#result').text('정답입니다!');
+            score += 1;
           } else {
             $('#result').text('오답입니다. 정답: ' + res.answer);
           }
           loadQuestion();
         }
+      });
+    });
+
+
+    $('#reset').on('click', function() {
+      $.post('/reset', function(res) {
+        $('#score').text('점수: ' + res.score);
       });
     });
 
