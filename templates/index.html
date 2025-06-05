@@ -21,7 +21,7 @@
 
   <script>
     let currentId = null;
-    let score = 0;
+    let score = {{ score }};
     function updateScore() {
       $('#score-value').text(score);
     }
@@ -54,10 +54,11 @@
         success: function(res) {
           if (res.correct) {
             $('#result').text('정답입니다!');
-            score += 1;
           } else {
             $('#result').text('오답입니다. 정답: ' + res.answer);
           }
+          score = res.score;
+          updateScore();
           loadQuestion();
         }
       });
@@ -66,11 +67,13 @@
 
     $('#reset').on('click', function() {
       $.post('/reset', function(res) {
-        $('#score-value').text(res.score);
+        score = res.score;
+        updateScore();
       });
     });
 
     $(function() {
+      updateScore();
       loadQuestion();
     });
   </script>
