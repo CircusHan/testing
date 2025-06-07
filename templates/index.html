@@ -1,81 +1,99 @@
-<!doctype html>
-<html lang="ko">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Vocabulary Quiz</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Bot</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        #chat-container { max-width: 600px; margin: 30px auto; background-color: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
+        #chatbox { height: 400px; overflow-y: auto; padding: 20px; border-bottom: 1px solid #eee; }
+        .message { margin-bottom: 15px; padding: 10px; border-radius: 5px; }
+        .user-message { background-color: #e1f5fe; text-align: right; margin-left: auto; max-width: 80%; }
+        .bot-message { background-color: #f0f0f0; text-align: left; margin-right: auto; max-width: 80%; }
+        #input-area { padding: 20px; display: flex; flex-direction: column; }
+        #input-area input[type="text"] { padding: 10px; margin-bottom:10px; border: 1px solid #ddd; border-radius: 4px; }
+        #input-area button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        #input-area button:hover { background-color: #0056b3; }
+        h1 { text-align: center; padding: 20px 0; background-color: #007bff; color: white; margin:0; }
+    </style>
 </head>
 <body>
-  <h1>영어 단어 퀴즈</h1>
-  <p id="score">점수: {{ score }}</p>
-  <button id="reset">점수 초기화</button>
-  <div id="quiz">
-    <div id="scoreboard">점수: <span id="score-value">0</span></div>
-    <p id="definition"></p>
-    <form id="choices"></form>
-    <button id="submit">제출</button>
-    <button id="next" type="button">다음 문제</button>
-    <p id="result"></p>
-  </div>
+    <div id="chat-container">
+        <h1>Hospital Bot</h1>
+        <div id="chatbox">
+            <div class="bot-message">Hello! How can I assist you today?</div>
+        </div>
+        <form id="chatForm" autocomplete="off">
+            <div id="input-area">
+                <input type="text" id="userInput" placeholder="Type your message..." required>
+                <input type="text" id="nameInput" placeholder="Name (optional, for actions)">
+                <input type="text" id="rrnInput" placeholder="RRN (optional, for actions)">
+                <button type="submit" id="sendMessage">Send</button>
+            </div>
+        </form>
+    </div>
 
-  <script>
-    let currentId = null;
-    let score = {{ score }};
-    function updateScore() {
-      $('#score-value').text(score);
-    }
+    <script>
+        const chatForm = document.getElementById('chatForm');
+        const userInput = document.getElementById('userInput');
+        const nameInput = document.getElementById('nameInput');
+        const rrnInput = document.getElementById('rrnInput');
+        const chatbox = document.getElementById('chatbox');
 
-    function loadQuestion() {
-      $('#result').text('');
-      $.getJSON('/question', function(data) {
-        currentId = data.id;
-        $('#definition').text('뜻: ' + data.definition);
-        const form = $('#choices');
-        form.empty();
-        data.options.forEach(function(option, index) {
-          const label = $('<label>');
-          const radio = $('<input type="radio" name="choice">').val(option);
-          label.append(radio).append(option);
-          form.append(label).append('<br>');
+        chatForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const userMessage = userInput.value.trim();
+            const name = nameInput.value.trim();
+            const rrn = rrnInput.value.trim();
+
+            if (!userMessage) return;
+
+            appendMessage(userMessage, 'user-message');
+            userInput.value = ''; // Clear input field
+
+            const payload = { message: userMessage };
+            if (name) {
+                payload.name = name;
+            }
+            if (rrn) {
+                payload.rrn = rrn;
+            }
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                let botReply = data.reply || "Sorry, I didn't get a response.";
+                if (data.success === false && data.message) { // For backend function calls
+                    botReply = data.message;
+                } else if (data.reply && data.action_performed) {
+                     botReply = `Action: ${data.action_performed}. Result: ${data.reply}`;
+                }
+
+
+                appendMessage(botReply, 'bot-message');
+
+            } catch (error) {
+                console.error('Error sending message:', error);
+                appendMessage('Error connecting to the server. Please try again.', 'bot-message');
+            }
         });
-      });
-    }
 
-    $('#submit').on('click', function(e) {
-      e.preventDefault();
-      const choice = $('input[name="choice"]:checked').val();
-      if (!choice) return;
-      $.ajax({
-        url: '/answer',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({id: currentId, choice: choice}),
-        success: function(res) {
-          if (res.correct) {
-            $('#result').text('정답입니다!');
-          } else {
-            $('#result').text('오답입니다. 정답: ' + res.answer);
-          }
-          score = res.score;
-          updateScore();
-          loadQuestion();
+        function appendMessage(message, className) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', className);
+            messageDiv.textContent = message;
+            chatbox.appendChild(messageDiv);
+            chatbox.scrollTop = chatbox.scrollHeight; // Auto-scroll to bottom
         }
-      });
-    });
-
-
-    $('#reset').on('click', function() {
-      $.post('/reset', function(res) {
-        score = res.score;
-        updateScore();
-      });
-    });
-
-    $(function() {
-      updateScore();
-      loadQuestion();
-    });
-  </script>
+    </script>
 </body>
 </html>
