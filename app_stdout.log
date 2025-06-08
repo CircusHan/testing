@@ -1,0 +1,3 @@
+WARNING: GOOGLE_API_KEY environment variable not set. Using placeholder.
+ * Serving Flask app 'app'
+ * Debug mode: on

@@ -1,2 +1,2 @@
-Flask>=2.0
-pytest>=6.0
+Flask
+google-generativeai
